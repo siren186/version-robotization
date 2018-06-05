@@ -1,1 +1,1 @@
-./run.sh version.h.template version.h
+./version_gen.sh version.h.template version.h
