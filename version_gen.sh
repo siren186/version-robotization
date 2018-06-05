@@ -1,26 +1,32 @@
 echo "=========="
-echo "run version.sh"
+echo "enter version_gen.sh"
 pwd
-git rev-list HEAD | sort > config.git-hash
-COMMIT_COUNT=`wc -l config.git-hash | awk '{print $1}'`
-echo "git commit count = $COMMIT_COUNT"
-if [ $COMMIT_COUNT \> 1 ] ; then
-    if git status | grep -q "modified:" ; then
-        MODIFIED="1"
-		echo "warning !!! some file modified but not commit"
-	else
-        MODIFIED="0"
-    fi
-    SHA1="$(git rev-list HEAD -n 1 | cut -c 1-7)"
-	echo "git commit SHA1 = $SHA1"
+
+# =========================================================
+# Get git commit count
+git rev-list HEAD | sort > {81F1B2F1-F37F-480E-8D98-D9BCF3B05CE5}.tmp
+var_commit_count=`wc -l {81F1B2F1-F37F-480E-8D98-D9BCF3B05CE5}.tmp | awk '{print $1}'`
+rm -f {81F1B2F1-F37F-480E-8D98-D9BCF3B05CE5}.tmp
+
+# Get git status
+if git status | grep -q "modified:" ; then
+    var_modified=" some file modified but not commit"
+    echo "warning !!! some file modified but not commit"
 else
-    echo "error in version.sh, git has no commits"
-    COMMIT_COUNT="0"
-	MODIFIED="0"
-	SHA1="0"
+    var_modified=""
 fi
-rm -f config.git-hash
-cat $1 | sed "s/\$GIT_SHA1/$SHA1/g;s/\$GIT_COMMIT_COUNT/$COMMIT_COUNT/g;s/\$GIT_MODIFIED/$MODIFIED/g;" > version.h
-[ -n "$2" ] && cp version.h $2
-echo "run version.sh finished"
+
+# =========================================================
+# Generate string version
+var_commit_ts=`git log -1 --format="%ct"`
+var_commit_time=`date -d@$var_commit_ts +"%Y%m%d%H%M%S"`
+var_current_time=`date +"%Y%m%d%H%M%S"`
+var_git_sha1_short=`git log -1 --format="%h"`
+var_git_sha1_large=`git log -1 --format="%H"`
+
+cat $1 | sed "s/\$GIT_SHA1/$var_git_sha1_short/g;s/\$GIT_COMMIT_COUNT/$var_commit_count/g;s/\$GIT_STRING/\"sha1:$var_git_sha1_large commit:$var_commit_time build:$var_current_time$var_modified\"/g;" > {81F1B2F1-F37F-480E-8D98-D9BCF3B05CE5}.tmp
+[ -n "$2" ] && cp {81F1B2F1-F37F-480E-8D98-D9BCF3B05CE5}.tmp $2
+rm -f {81F1B2F1-F37F-480E-8D98-D9BCF3B05CE5}.tmp
+
+echo "version_gen.sh finished"
 echo "=========="
