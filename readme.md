@@ -2,13 +2,13 @@
 ----
 
 ## 使用方法
-- 执行`run.sh`, 需要2个参数
+- 执行`version_gen.sh`, 需要2个参数
     - 参数1: 使用的版本模版文件的路径
     - 参数2: 生成的版本文件路径
 
 ## 例子
 ```
-sh run.sh version.h.template version.h
+sh version_gen.sh version.h.template version.h
 ```
 
 ## 填坑
